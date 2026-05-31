@@ -1,0 +1,17 @@
+<div class="glass-card">
+    <h6 class="section-title"><i class="fa-solid fa-clock"></i> Voice clock</h6>
+    <form action="/clock-setup" method="POST" class="row g-3">
+        <div class="col-md-4"><select name="guild_id" class="form-select guild-select" data-target-voice="clock_vc"><% clientGuilds.forEach(g => { %><option value="<%= g.id %>"><%= g.name %></option><% }) %></select></div>
+        <div class="col-md-4"><select name="channel_id" id="clock_vc" class="form-select" required></select></div>
+        <div class="col-md-3"><input name="timezone" class="form-control" placeholder="Asia/Ho_Chi_Minh" required></div>
+        <div class="col-md-1"><button class="btn btn-accent w-100">Set</button></div>
+    </form>
+</div>
+<div class="glass-card p-0">
+    <table class="table mb-0"><tbody>
+        <% clocks.forEach(c => { %>
+        <tr><td><%= c.guildName %></td><td><%= c.channelName %></td><td><%= c.timezone %></td>
+        <td><a href="/clock-remove/<%= c.guildId %>" class="btn-danger-sm">×</a></td></tr>
+        <% }) %>
+    </tbody></table>
+</div>

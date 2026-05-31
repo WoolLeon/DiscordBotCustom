@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('partials/head', { accentColor, pageTitle: 'Bot Dashboard' }) %>
+</head>
+<body>
+<div class="app-shell">
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <img src="<%= bot.displayAvatarURL() %>" alt="">
+            <div>
+                <div class="name"><%= bot.username %></div>
+                <% if (clientReady) { %>
+                    <span class="badge bg-success" style="font-size:9px">ONLINE</span>
+                <% } else { %>
+                    <span class="badge bg-danger" style="font-size:9px">OFFLINE</span>
+                <% } %>
+            </div>
+        </div>
+        <div class="nav-scroll">
+            <div class="nav-section">Main</div>
+            <button type="button" class="nav-item-btn active" data-panel="overview" data-title="Overview"><i class="fa-solid fa-gauge-high"></i> Overview</button>
+            <div class="nav-section">Moderation</div>
+            <button type="button" class="nav-item-btn" data-panel="roles" data-title="Role Logic"><i class="fa-solid fa-shield-halved"></i> Role Logic</button>
+            <button type="button" class="nav-item-btn" data-panel="warns" data-title="Warn System"><i class="fa-solid fa-triangle-exclamation"></i> Warnings</button>
+            <button type="button" class="nav-item-btn" data-panel="tickets" data-title="Tickets"><i class="fa-solid fa-ticket"></i> Tickets</button>
+            <div class="nav-section">Community</div>
+            <button type="button" class="nav-item-btn" data-panel="leveling" data-title="Leveling"><i class="fa-solid fa-ranking-star"></i> Leveling</button>
+            <button type="button" class="nav-item-btn" data-panel="welcome" data-title="Welcome"><i class="fa-solid fa-hand-wave"></i> Welcome</button>
+            <button type="button" class="nav-item-btn" data-panel="starboard" data-title="Starboard"><i class="fa-solid fa-star"></i> Starboard</button>
+            <button type="button" class="nav-item-btn" data-panel="announcements" data-title="Announcements"><i class="fa-solid fa-tower-broadcast"></i> Announcements</button>
+            <div class="nav-section">Voice & Tools</div>
+            <button type="button" class="nav-item-btn" data-panel="temp" data-title="Temp Channels"><i class="fa-solid fa-microphone"></i> Temp VC</button>
+            <button type="button" class="nav-item-btn" data-panel="radios" data-title="Radios"><i class="fa-solid fa-radio"></i> Radios</button>
+            <button type="button" class="nav-item-btn" data-panel="clock" data-title="Clock"><i class="fa-solid fa-clock"></i> Clock</button>
+            <div class="nav-section">System</div>
+            <button type="button" class="nav-item-btn" data-panel="permissions" data-title="Permissions"><i class="fa-solid fa-user-lock"></i> Permissions</button>
+            <button type="button" class="nav-item-btn" data-panel="theme" data-title="Theme"><i class="fa-solid fa-palette"></i> Theme</button>
+        </div>
+        <div class="mt-4 px-2">
+            <a href="/logout" class="btn btn-danger-sm w-100 text-center"><i class="fa-solid fa-right-from-bracket me-1"></i> Logout</a>
+        </div>
+    </aside>
+
+    <div class="main-area">
+        <header class="topbar">
+            <h1 class="h5 mb-0 fw-bold" id="page-title">Overview</h1>
+            <span class="small" style="color:var(--subtext)">Modular System v3.0</span>
+        </header>
+        <div class="content">
+            <% if (!clientReady) { %>
+            <div class="alert-offline d-flex gap-3 align-items-start">
+                <i class="fa-solid fa-plug-circle-xmark fa-lg text-warning"></i>
+                <div>
+                    <strong>Bot offline</strong>
+                    <p class="small mb-0" style="color:var(--subtext)">Discord is disconnected. Guild dropdowns and live data may be limited.</p>
+                </div>
+            </div>
+            <% } %>
+
+            <div id="panel-overview" class="panel active"><%- include('sections/overview') %></div>
+            <div id="panel-roles" class="panel"><%- include('sections/roles') %></div>
+            <div id="panel-leveling" class="panel"><%- include('sections/leveling') %></div>
+            <div id="panel-welcome" class="panel"><%- include('sections/welcome') %></div>
+            <div id="panel-starboard" class="panel"><%- include('sections/starboard') %></div>
+            <div id="panel-announcements" class="panel"><%- include('sections/announcements') %></div>
+            <div id="panel-warns" class="panel"><%- include('sections/warns') %></div>
+            <div id="panel-tickets" class="panel"><%- include('sections/tickets') %></div>
+            <div id="panel-temp" class="panel"><%- include('sections/temp') %></div>
+            <div id="panel-radios" class="panel"><%- include('sections/radios') %></div>
+            <div id="panel-clock" class="panel"><%- include('sections/clock') %></div>
+            <div id="panel-permissions" class="panel"><%- include('sections/permissions') %></div>
+            <div id="panel-theme" class="panel"><%- include('sections/theme') %></div>
+        </div>
+    </div>
+</div>
+<script src="/assets/discord-role-picker.js"></script>
+<%- include('partials/guild-script') %>
+</body>
+</html>

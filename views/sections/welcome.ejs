@@ -1,0 +1,51 @@
+<div class="row g-3">
+    <div class="col-lg-6">
+        <div class="glass-card">
+            <h6 class="section-title"><i class="fa-solid fa-door-open"></i> Welcome</h6>
+            <form action="/welcome-setup" method="POST">
+                <div class="mb-2"><label class="small fw-bold">Server</label>
+                    <select name="guild_id" class="form-select guild-select" data-target-chan="welcome_chan"><% clientGuilds.forEach(g => { %><option value="<%= g.id %>"><%= g.name %></option><% }) %></select></div>
+                <div class="mb-2"><label class="small fw-bold">Channel</label><select name="channel_id" id="welcome_chan" class="form-select" required></select></div>
+                <div class="mb-2"><label class="small fw-bold">Message</label>
+                    <textarea name="message" class="form-control" rows="2" placeholder="Welcome {user} to {server}! Member #{membercount}"></textarea></div>
+                <button class="btn btn-accent btn-sm">Save welcome</button>
+            </form>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="glass-card">
+            <h6 class="section-title"><i class="fa-solid fa-door-closed"></i> Goodbye</h6>
+            <form action="/goodbye-setup" method="POST">
+                <div class="mb-2"><select name="guild_id" class="form-select guild-select" data-target-chan="goodbye_chan"><% clientGuilds.forEach(g => { %><option value="<%= g.id %>"><%= g.name %></option><% }) %></select></div>
+                <div class="mb-2"><select name="channel_id" id="goodbye_chan" class="form-select" required></select></div>
+                <div class="mb-2"><textarea name="message" class="form-control" rows="2" placeholder="{user} left {server}."></textarea></div>
+                <button class="btn btn-accent btn-sm">Save goodbye</button>
+            </form>
+        </div>
+        <div class="glass-card">
+            <h6 class="section-title"><i class="fa-solid fa-user-plus"></i> Auto-roles</h6>
+            <form action="/autorole-add" method="POST" class="row g-2">
+                <div class="col-12"><select name="guild_id" class="form-select guild-select"><% clientGuilds.forEach(g => { %><option value="<%= g.id %>"><%= g.name %></option><% }) %></select></div>
+                <div class="col-12"><label class="small fw-bold mb-1">Auto-role</label></div>
+                <div class="col-12"><div class="discord-role-picker" data-mode="single" data-field="role_id" data-required="true"></div></div>
+                <div class="col-12"><button class="btn btn-accent btn-sm w-100">Add auto-role</button></div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="glass-card p-0">
+    <table class="table table-sm mb-0">
+        <thead><tr><th>Server</th><th>Welcome</th><th>Goodbye</th><th>Auto-roles</th></tr></thead>
+        <tbody>
+            <% welcomeRows.forEach(w => { %>
+            <tr>
+                <td><%= w.guildName %></td>
+                <td><%= w.welcomeCh %></td>
+                <td><%= w.goodbyeCh %></td>
+                <td><%- w.autoroles %></td>
+            </tr>
+            <% }) %>
+            <% if (!welcomeRows.length) { %><tr><td colspan="4" class="text-center py-3" style="color:var(--subtext)">No welcome config.</td></tr><% } %>
+        </tbody>
+    </table>
+</div>

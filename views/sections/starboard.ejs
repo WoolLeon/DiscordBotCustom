@@ -1,0 +1,24 @@
+<div class="glass-card">
+    <h6 class="section-title"><i class="fa-solid fa-star"></i> Starboard setup</h6>
+    <form action="/starboard-setup" method="POST" class="row g-3 align-items-end">
+        <div class="col-md-4"><label class="small fw-bold">Server</label>
+            <select name="guild_id" class="form-select guild-select" data-target-chan="star_chan"><% clientGuilds.forEach(g => { %><option value="<%= g.id %>"><%= g.name %></option><% }) %></select></div>
+        <div class="col-md-4"><label class="small fw-bold">Channel</label><select name="channel_id" id="star_chan" class="form-select" required></select></div>
+        <div class="col-md-2"><label class="small fw-bold">Threshold</label><input type="number" name="threshold" class="form-control" value="3" min="1" max="25"></div>
+        <div class="col-md-2"><button class="btn btn-accent w-100">Save</button></div>
+    </form>
+</div>
+<div class="glass-card p-0">
+    <table class="table mb-0"><thead><tr><th>Server</th><th>Channel</th><th>Stars needed</th><th></th></tr></thead>
+    <tbody>
+        <% starboards.forEach(s => { %>
+        <tr>
+            <td><%= s.guildName %></td>
+            <td><%= s.channelName %></td>
+            <td><%= s.threshold %> ⭐</td>
+            <td><a href="/starboard-disable/<%= s.guildId %>" class="btn-danger-sm">Disable</a></td>
+        </tr>
+        <% }) %>
+        <% if (!starboards.length) { %><tr><td colspan="4" class="text-center py-3" style="color:var(--subtext)">Not configured.</td></tr><% } %>
+    </tbody></table>
+</div>

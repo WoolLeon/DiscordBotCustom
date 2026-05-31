@@ -1,0 +1,93 @@
+<div class="glass-card">
+    <h6 class="section-title"><i class="fa-solid fa-plus"></i> Add role logic rule</h6>
+    <p class="small mb-3" style="color:var(--subtext)">
+        <b>AND</b> = must have all · <b>OR</b> = need N from pool · <b>NOT</b> = must not have any listed role.
+        Roles are listed top-to-bottom like Discord (highest first). Use search to filter.
+    </p>
+    <form action="/add-rule" method="POST" id="role-logic-form">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label class="small fw-bold">Server</label>
+                <select name="guild_id" class="form-select guild-select" required>
+                    <% clientGuilds.forEach(g => { %><option value="<%= g.id %>"><%= g.name %></option><% }) %>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="small fw-bold">Rule name (optional)</label>
+                <input type="text" name="name" class="form-control" placeholder="e.g. Verified Member">
+            </div>
+            <div class="col-md-4">
+                <label class="small fw-bold">Min OR roles</label>
+                <input type="number" name="min_optional" class="form-control" value="1" min="0" max="25">
+            </div>
+            <div class="col-md-4">
+                <label class="small fw-bold">Priority</label>
+                <input type="number" name="priority" class="form-control" value="0">
+            </div>
+            <div class="col-md-4">
+                <label class="small fw-bold">On fail</label>
+                <select name="remove_on_fail" class="form-select">
+                    <option value="1">Remove reward</option>
+                    <option value="0">Keep reward</option>
+                </select>
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="enabled" value="1" id="rule_enabled" checked>
+                    <label class="form-check-label small" for="rule_enabled">Enabled</label>
+                </div>
+            </div>
+            <div class="col-12">
+                <label class="small fw-bold mb-2">Reward role</label>
+                <div class="discord-role-picker" data-mode="single" data-field="reward_role" data-required="true"></div>
+            </div>
+            <div class="col-12">
+                <label class="small fw-bold mb-2">Required (AND — must have all)</label>
+                <div class="discord-role-picker" data-mode="multi" data-field="required_roles"></div>
+            </div>
+            <div class="col-12">
+                <label class="small fw-bold mb-2">Optional pool (OR — pick min count above)</label>
+                <div class="discord-role-picker" data-mode="multi" data-field="optional_roles"></div>
+            </div>
+            <div class="col-12">
+                <label class="small fw-bold mb-2">Forbidden (NOT — cannot have any)</label>
+                <div class="discord-role-picker" data-mode="multi" data-field="forbidden_roles"></div>
+            </div>
+        </div>
+        <button class="btn btn-accent mt-3"><i class="fa-solid fa-plus me-1"></i> Add rule</button>
+    </form>
+</div>
+<div class="glass-card p-0 overflow-hidden">
+    <table class="table table-borderless mb-0">
+        <thead>
+            <tr>
+                <th>Rule</th>
+                <th>Reward</th>
+                <th>Conditions</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <% roles.forEach(r => { %>
+            <tr>
+                <td class="small">
+                    <span class="<%= r.enabled ? '' : 'text-muted' %>"><%= r.enabled ? '🟢' : '⚫' %> #<%= r.id %></span>
+                    <% if (r.name) { %><br><b><%= r.name %></b><% } %>
+                    <br><span style="color:var(--subtext)">prio <%= r.priority %></span>
+                </td>
+                <td><span class="badge-reward" style="background:<%= r.rewardColor %>22;color:<%= r.rewardColor %>">@<%= r.rewardName %></span></td>
+                <td class="small">
+                    <b>AND:</b> <%- r.and %><br>
+                    <b>OR (≥<%= r.minOptional %>):</b> <%- r.or %><br>
+                    <b>NOT:</b> <%- r.forbidden %>
+                </td>
+                <td>
+                    <a href="/toggle-rule/<%= r.id %>" class="btn btn-sm btn-outline-secondary me-1" title="Toggle"><i class="fa-solid fa-power-off"></i></a>
+                    <a href="/delete-rule/<%= r.id %>" class="btn-danger-sm"><i class="fa-solid fa-trash"></i></a>
+                </td>
+            </tr>
+            <% }) %>
+            <% if (!roles.length) { %><tr><td colspan="4" class="text-center py-4" style="color:var(--subtext)">No rules yet.</td></tr><% } %>
+        </tbody>
+    </table>
+</div>

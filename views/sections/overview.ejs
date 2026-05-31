@@ -1,0 +1,36 @@
+<div class="stat-grid">
+    <div class="stat-card"><div class="value"><%= stats.guilds %></div><div class="label">Servers</div></div>
+    <div class="stat-card"><div class="value"><%= stats.members %></div><div class="label">Members</div></div>
+    <div class="stat-card"><div class="value"><%= stats.commands %></div><div class="label">Commands</div></div>
+    <div class="stat-card"><div class="value"><%= stats.openTickets %></div><div class="label">Open Tickets</div></div>
+    <div class="stat-card"><div class="value"><%= stats.warnings %></div><div class="label">Warnings</div></div>
+    <div class="stat-card"><div class="value"><%= stats.leveledUsers %></div><div class="label">Ranked Users</div></div>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-6">
+        <div class="glass-card">
+            <h6 class="section-title"><i class="fa-solid fa-heart-pulse"></i> System Health</h6>
+            <div class="health-mini d-flex justify-content-between">CPU <span><%= system.cpu %>%</span></div>
+            <div class="progress mb-2"><div class="progress-bar" style="width:<%= Math.min(100, system.cpu) %>%"></div></div>
+            <div class="health-mini d-flex justify-content-between">RAM <span><%= system.memUsage %>%</span></div>
+            <div class="progress mb-2"><div class="progress-bar" style="width:<%= system.memUsage %>%"></div></div>
+            <div class="health-mini d-flex justify-content-between">Disk <span><%= system.diskUsage %>%</span></div>
+            <div class="progress mb-2"><div class="progress-bar" style="width:<%= system.diskUsage %>%"></div></div>
+            <small style="color:var(--subtext)"><i class="fa-solid fa-clock me-1"></i> Uptime <%= system.uptime %>h · <%= system.memVal %></small>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="glass-card">
+            <h6 class="section-title"><i class="fa-solid fa-puzzle-piece"></i> Loaded Plugins</h6>
+            <% plugins.forEach(p => { %>
+                <span class="plugin-chip"><i class="fa-solid fa-cube"></i> <%= p %></span>
+            <% }) %>
+        </div>
+        <div class="glass-card">
+            <h6 class="section-title"><i class="fa-solid fa-link"></i> Quick Links</h6>
+            <p class="small mb-2" style="color:var(--subtext)">Public leaderboard (replace GUILD_ID):</p>
+            <code class="d-block p-2 rounded small" style="background:rgba(0,0,0,0.3); word-break:break-all">/leaderboard/GUILD_ID</code>
+        </div>
+    </div>
+</div>

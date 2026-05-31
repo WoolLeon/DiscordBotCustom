@@ -1,0 +1,218 @@
+<%
+/**
+ * Radio Dashboard Panel
+ * Shows all available lofi stations + configured auto-radio entries.
+ * Supports assigning a station to a voice channel so the bot auto-joins on !lofi.
+ */
+const LOFI_STATION_LIST = [
+    { key: 'lofi',       emoji: '☁️',  label: 'Lofi Hip-Hop',       color: '#7289DA', genre: 'Lofi / Chill' },
+    { key: 'chill',      emoji: '🌙',  label: 'Chill Vibes',         color: '#4B6FA8', genre: 'Chill / Ambient' },
+    { key: 'jazz',       emoji: '🎷',  label: 'Jazz Coffee',         color: '#C5A028', genre: 'Jazz' },
+    { key: 'synthwave',  emoji: '🌊',  label: 'Synthwave',           color: '#FF2281', genre: 'Synthwave' },
+    { key: 'classical',  emoji: '🎻',  label: 'Classical Focus',     color: '#D4A373', genre: 'Classical' },
+    { key: 'nature',     emoji: '🌿',  label: 'Nature Sounds',       color: '#52B788', genre: 'Ambient' },
+    { key: 'piano',      emoji: '🎹',  label: 'Piano Dreams',        color: '#E2C98B', genre: 'Piano' },
+    { key: 'rock',       emoji: '🎸',  label: 'Indie Rock',          color: '#E63946', genre: 'Indie Rock' },
+    { key: 'electronic', emoji: '⚡',  label: 'Electronic',          color: '#00BFFF', genre: 'EDM' },
+    { key: 'kpop',       emoji: '🌸',  label: 'K-Pop',               color: '#FF69B4', genre: 'K-Pop' },
+    { key: 'viet',       emoji: '🇻🇳', label: 'Nhạc Việt',          color: '#DA291C', genre: 'V-Pop' },
+    { key: 'nhac_vang',  emoji: '🎶',  label: 'Nhạc Vàng',          color: '#FFD700', genre: 'Bolero / Oldies' },
+];
+%>
+
+<!-- ── Station Grid ──────────────────────────────────────────────────────────── -->
+<div class="section-title"><i class="fa-solid fa-radio"></i> Lofi Radio Stations</div>
+<p style="color:var(--subtext);font-size:0.85rem;margin-top:-0.5rem;margin-bottom:1.25rem;">
+    Use <code>!lofi &lt;station&gt;</code> or <code>/lofi</code> in Discord to start a station.
+    Configure auto-radio below to have the bot join a VC automatically.
+</p>
+
+<div class="station-grid" id="station-grid">
+    <% LOFI_STATION_LIST.forEach(s => { %>
+    <div class="station-card" style="--sc:#<%= s.color.replace('#','') %>">
+        <div class="station-emoji"><%= s.emoji %></div>
+        <div class="station-info">
+            <div class="station-name"><%= s.label %></div>
+            <div class="station-genre"><%= s.genre %></div>
+        </div>
+        <code class="station-key"><%= s.key %></code>
+    </div>
+    <% }); %>
+</div>
+
+<hr style="border-color:var(--card-border);margin:1.5rem 0;">
+
+<!-- ── Auto-Radio Config ─────────────────────────────────────────────────────── -->
+<div class="section-title"><i class="fa-solid fa-sliders"></i> Auto-Radio Configuration</div>
+<p style="color:var(--subtext);font-size:0.85rem;margin-top:-0.5rem;margin-bottom:1rem;">
+    Saved entries are remembered in the dashboard. Use <code>!lofi &lt;key&gt;</code> to start them from Discord.
+</p>
+
+<div class="glass-card">
+    <form action="/add-radio" method="POST" class="row g-3 align-items-end" id="radio-add-form">
+        <div class="col-md-4">
+            <label class="form-label small" style="color:var(--subtext)">Server</label>
+            <select name="guild_id" class="form-select" id="radio-guild-select">
+                <% clientGuilds.forEach(g => { %>
+                <option value="<%= g.id %>"><%= g.name %></option>
+                <% }); %>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label small" style="color:var(--subtext)">Station</label>
+            <select name="station_key" class="form-select" required>
+                <% LOFI_STATION_LIST.forEach(s => { %>
+                <option value="<%= s.key %>"><%= s.emoji %> <%= s.label %></option>
+                <% }); %>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label small" style="color:var(--subtext)">Voice Channel (optional note)</label>
+            <input name="voice_channel_hint" class="form-control" placeholder="e.g. #lofi-radio (display only)">
+        </div>
+        <div class="col-12 text-end">
+            <button type="submit" class="btn btn-accent" id="radio-add-btn">
+                <i class="fa-solid fa-plus me-1"></i> Save Auto-Radio
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- ── Saved Entries Table ───────────────────────────────────────────────────── -->
+<% if (radios.length > 0) { %>
+<div class="glass-card p-0">
+    <table class="table mb-0">
+        <thead>
+            <tr>
+                <th>Server</th>
+                <th>Station</th>
+                <th>VC Hint</th>
+                <th style="width:60px"></th>
+            </tr>
+        </thead>
+        <tbody>
+            <% radios.forEach(r => { %>
+            <tr>
+                <td>
+                    <i class="fa-solid fa-server me-1" style="color:var(--subtext)"></i>
+                    <%= r.guildName %>
+                </td>
+                <td>
+                    <%
+                    const stationMeta = LOFI_STATION_LIST.find(s => s.key === r.station);
+                    %>
+                    <span class="station-badge-inline" style="background:<%= stationMeta ? stationMeta.color + '22' : 'rgba(255,255,255,0.08)' %>;color:<%= stationMeta ? stationMeta.color : 'var(--text)' %>">
+                        <%= stationMeta ? stationMeta.emoji + ' ' : '' %><%= r.station %>
+                    </span>
+                </td>
+                <td style="color:var(--subtext);font-size:0.85rem">
+                    <%= r.voiceChannelHint || '—' %>
+                </td>
+                <td>
+                    <a href="/delete-radio/<%= r.id %>" class="btn-danger-sm" title="Remove">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </a>
+                </td>
+            </tr>
+            <% }); %>
+        </tbody>
+    </table>
+</div>
+<% } else { %>
+<div class="glass-card text-center py-4" style="color:var(--subtext)">
+    <i class="fa-solid fa-radio fa-2x mb-2" style="opacity:0.3"></i>
+    <p class="mb-0 small">No auto-radio entries yet. Add one above.</p>
+</div>
+<% } %>
+
+<!-- ── Quick-Start Commands ──────────────────────────────────────────────────── -->
+<div class="glass-card" style="margin-top:1rem;">
+    <div class="section-title mb-2" style="font-size:0.95rem"><i class="fa-solid fa-terminal"></i> Quick Commands</div>
+    <div class="cmd-grid">
+        <div class="cmd-item"><code>!lofi</code><span>Start default lofi station</span></div>
+        <div class="cmd-item"><code>!lofi jazz</code><span>Start jazz station</span></div>
+        <div class="cmd-item"><code>!lofi viet</code><span>Bắt đầu Nhạc Việt</span></div>
+        <div class="cmd-item"><code>!lofi nhac_vang</code><span>Mở Nhạc Vàng / Bolero</span></div>
+        <div class="cmd-item"><code>!lofi-stop</code><span>Stop radio &amp; disconnect</span></div>
+        <div class="cmd-item"><code>!lofi-volume 60</code><span>Set volume to 60%</span></div>
+        <div class="cmd-item"><code>!lofi-nowplaying</code><span>Show current station</span></div>
+        <div class="cmd-item"><code>!lofi-list</code><span>List all stations</span></div>
+    </div>
+</div>
+
+<style>
+/* ── Station Grid ─────────────────────────────────────────────────────────── */
+.station-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+.station-card {
+    background: rgba(var(--accent-rgb), 0.05);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 14px;
+    padding: 0.9rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+    cursor: default;
+}
+.station-card:hover {
+    border-color: color-mix(in srgb, #<%= 'var(--accent)'.replace('var(--accent)', '') %> 40%, transparent);
+    border-color: rgba(255,255,255,0.18);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+}
+.station-emoji { font-size: 1.6rem; line-height: 1; flex-shrink: 0; }
+.station-info { flex: 1; min-width: 0; }
+.station-name { font-weight: 600; font-size: 0.88rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.station-genre { font-size: 0.72rem; color: var(--subtext); margin-top: 2px; }
+.station-key {
+    font-size: 0.7rem;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 2px 6px;
+    border-radius: 6px;
+    white-space: nowrap;
+    color: var(--subtext);
+    flex-shrink: 0;
+}
+
+/* ── Station Badge ────────────────────────────────────────────────────────── */
+.station-badge-inline {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    border: 1px solid transparent;
+}
+
+/* ── Command Grid ─────────────────────────────────────────────────────────── */
+.cmd-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 0.5rem;
+}
+.cmd-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.45rem 0.65rem;
+    background: rgba(0,0,0,0.2);
+    border-radius: 8px;
+    font-size: 0.83rem;
+}
+.cmd-item code {
+    color: var(--accent);
+    background: rgba(var(--accent-rgb), 0.12);
+    border: 1px solid rgba(var(--accent-rgb), 0.2);
+    padding: 2px 6px;
+    border-radius: 5px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+.cmd-item span { color: var(--subtext); }
+</style>

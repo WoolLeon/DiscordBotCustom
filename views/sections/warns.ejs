@@ -1,0 +1,26 @@
+<div class="glass-card">
+    <h6 class="section-title"><i class="fa-solid fa-triangle-exclamation"></i> Auto-punish thresholds</h6>
+    <form action="/warn-config" method="POST" class="row g-3">
+        <div class="col-md-3"><label class="small fw-bold">Server</label>
+            <select name="guild_id" class="form-select"><% clientGuilds.forEach(g => { %><option value="<%= g.id %>"><%= g.name %></option><% }) %></select></div>
+        <div class="col-md-2"><label class="small fw-bold">Mute at</label><input type="number" name="mute_at" class="form-control" value="3" min="1"></div>
+        <div class="col-md-2"><label class="small fw-bold">Mute sec</label><input type="number" name="mute_duration" class="form-control" value="3600"></div>
+        <div class="col-md-2"><label class="small fw-bold">Kick at</label><input type="number" name="kick_at" class="form-control" value="5" min="1"></div>
+        <div class="col-md-2"><label class="small fw-bold">Ban at</label><input type="number" name="ban_at" class="form-control" value="7" min="1"></div>
+        <div class="col-md-1 d-flex align-items-end"><button class="btn btn-accent w-100">Save</button></div>
+    </form>
+</div>
+<div class="glass-card p-0">
+    <table class="table mb-0"><thead><tr><th>Server</th><th>Mute</th><th>Kick</th><th>Ban</th></tr></thead>
+    <tbody>
+        <% warnConfigs.forEach(c => { %>
+        <tr>
+            <td><%= c.guildName %></td>
+            <td><%= c.mute_at %> warns (<%= c.mute_duration %>s)</td>
+            <td><%= c.kick_at %> warns</td>
+            <td><%= c.ban_at %> warns</td>
+        </tr>
+        <% }) %>
+        <% if (!warnConfigs.length) { %><tr><td colspan="4" class="text-center py-3" style="color:var(--subtext)">Using plugin defaults.</td></tr><% } %>
+    </tbody></table>
+</div>

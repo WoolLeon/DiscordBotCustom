@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('partials/head', { accentColor, pageTitle: 'Login — Bot Dashboard' }) %>
+</head>
+<body class="d-flex align-items-center justify-content-center" style="min-height:100vh;">
+    <div class="glass-card text-center p-4 p-md-5" style="width:100%; max-width:380px; border-bottom: 3px solid var(--accent);">
+        <div class="mb-4">
+            <i class="fa-solid fa-robot fa-3x" style="color:var(--accent)"></i>
+        </div>
+        <h4 class="fw-bold mb-1">Control Panel</h4>
+        <p class="small mb-4" style="color:var(--subtext)">Sign in to manage your Discord bot</p>
+        <form method="POST" action="/login">
+            <input type="password" name="password" class="form-control mb-3 text-center py-2" placeholder="Dashboard password" required autofocus>
+            <button type="submit" class="btn btn-accent w-100 py-2">
+                <i class="fa-solid fa-right-to-bracket me-1"></i> Sign in
+            </button>
+        </form>
+    </div>
+</body>
+</html>

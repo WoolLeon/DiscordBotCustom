@@ -1,0 +1,73 @@
+<div class="glass-card">
+    <h6 class="section-title"><i class="fa-solid fa-sliders"></i> Leveling settings</h6>
+    <form action="/update-level-settings" method="POST">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label class="small fw-bold">Server</label>
+                <select name="guild_id" class="form-select guild-select" required data-target-chan="level_chan">
+                    <% clientGuilds.forEach(g => { %><option value="<%= g.id %>"><%= g.name %></option><% }) %>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="small fw-bold">Announce type</label>
+                <select name="announce_type" id="announce_type_select" class="form-select">
+                    <option value="channel">Channel</option>
+                    <option value="current">Current channel</option>
+                    <option value="dm">DM</option>
+                    <option value="disabled">Disabled</option>
+                </select>
+            </div>
+            <div class="col-md-4" id="announce_channel_wrapper">
+                <label class="small fw-bold">Announce channel</label>
+                <select name="announce_channel" id="level_chan" class="form-select"></select>
+            </div>
+            <div class="col-md-4">
+                <label class="small fw-bold">Role stacking</label>
+                <select name="stack_roles" class="form-select"><option value="1">On</option><option value="0">Off</option></select>
+            </div>
+            <div class="col-md-8">
+                <label class="small fw-bold">Message template</label>
+                <input name="announce_msg" class="form-control" placeholder="GG {user}! Level {level}!">
+            </div>
+        </div>
+        <button class="btn btn-accent mt-3">Save settings</button>
+    </form>
+</div>
+<div class="row g-3">
+    <div class="col-lg-6">
+        <div class="glass-card">
+            <h6 class="fw-bold small mb-3" style="color:var(--accent)">Level role reward</h6>
+            <form action="/add-level-role" method="POST" class="row g-2">
+                <div class="col-12"><select name="guild_id" class="form-select guild-select"><% clientGuilds.forEach(g => { %><option value="<%= g.id %>"><%= g.name %></option><% }) %></select></div>
+                <div class="col-4"><input type="number" name="level" class="form-control" placeholder="Level" min="1" required></div>
+                <div class="col-12"><label class="small fw-bold mb-1">Reward role</label></div>
+                <div class="col-12"><div class="discord-role-picker" data-mode="single" data-field="role_id" data-required="true"></div></div>
+                <div class="col-12"><button class="btn btn-accent btn-sm w-100">Add</button></div>
+            </form>
+        </div>
+        <div class="glass-card p-0"><table class="table table-sm mb-0"><tbody>
+            <% levelingRoles.forEach(r => { %>
+            <tr><td><%= r.guildName %></td><td>Lv.<%= r.level %></td><td>@<%= r.roleName %></td>
+            <td><a href="/delete-level-role/<%= r.guildId %>/<%= r.level %>" class="btn-danger-sm">×</a></td></tr>
+            <% }) %>
+        </tbody></table></div>
+    </div>
+    <div class="col-lg-6">
+        <div class="glass-card">
+            <h6 class="fw-bold small mb-3" style="color:var(--accent)">XP boost</h6>
+            <form action="/add-xp-boost" method="POST" class="row g-2">
+                <div class="col-12"><select name="guild_id" class="form-select guild-select"><% clientGuilds.forEach(g => { %><option value="<%= g.id %>"><%= g.name %></option><% }) %></select></div>
+                <div class="col-4"><input type="number" name="multiplier" class="form-control" step="0.1" min="0.1" placeholder="1.5" required></div>
+                <div class="col-12"><label class="small fw-bold mb-1">Boost role</label></div>
+                <div class="col-12"><div class="discord-role-picker" data-mode="single" data-field="role_id" data-required="true"></div></div>
+                <div class="col-12"><button class="btn btn-accent btn-sm w-100">Add boost</button></div>
+            </form>
+        </div>
+        <div class="glass-card p-0"><table class="table table-sm mb-0"><tbody>
+            <% levelingBoosts.forEach(b => { %>
+            <tr><td><%= b.guildName %></td><td>@<%= b.roleName %></td><td><%= b.multiplier %>x</td>
+            <td><a href="/delete-xp-boost/<%= b.guildId %>/<%= b.roleId %>" class="btn-danger-sm">×</a></td></tr>
+            <% }) %>
+        </tbody></table></div>
+    </div>
+</div>

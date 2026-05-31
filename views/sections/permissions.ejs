@@ -1,0 +1,83 @@
+<div class="glass-card mb-3">
+    <h6 class="section-title"><i class="fa-solid fa-user-lock"></i> Command & plugin access</h6>
+    <p class="small mb-3" style="color:var(--subtext)">
+        Control who can use bot commands per server. <strong>Everyone</strong> = no restriction.
+        <strong>Member</strong> = users with at least one role (not @everyone-only).
+        <strong>Admin</strong> = Manage Server or Administrator. Admins always bypass restrictions.
+    </p>
+    <form method="GET" action="/" class="row g-2 align-items-end mb-0">
+        <div class="col-md-8">
+            <label class="small fw-bold">Select server to configure</label>
+            <select name="guild" class="form-select" onchange="this.form.submit()">
+                <% if (!clientGuilds.length) { %>
+                    <option value="">No servers (bot offline)</option>
+                <% } %>
+                <% clientGuilds.forEach(g => { %>
+                    <option value="<%= g.id %>" <%= permGuildId === g.id ? 'selected' : '' %>><%= g.name %></option>
+                <% }) %>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <a href="/?guild=<%= permGuildId %>#panel-permissions" class="btn btn-accent w-100">Reload</a>
+        </div>
+    </form>
+</div>
+
+<% if (!permGuildId) { %>
+    <div class="glass-card text-center py-4" style="color:var(--subtext)">Select a server above to edit permissions.</div>
+<% } else { %>
+<form method="POST" action="/permissions/save">
+    <input type="hidden" name="guild_id" value="<%= permGuildId %>">
+
+    <% permissionCatalog.forEach(plugin => { %>
+    <div class="glass-card mb-3">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+            <div>
+                <span class="fw-bold"><i class="fa-solid fa-cube me-1" style="color:var(--accent)"></i> <%= plugin.name %></span>
+                <span class="small ms-2" style="color:var(--subtext)">plugin default</span>
+            </div>
+            <select name="p_<%= plugin.key %>" class="form-select form-select-sm" style="width:160px">
+                <option value="everyone" <%= plugin.level === 'everyone' ? 'selected' : '' %>>Everyone</option>
+                <option value="member" <%= plugin.level === 'member' ? 'selected' : '' %>>Member only</option>
+                <option value="admin" <%= plugin.level === 'admin' ? 'selected' : '' %>>Admin only</option>
+            </select>
+        </div>
+
+        <% if (plugin.commands.length) { %>
+        <div class="table-responsive">
+            <table class="table table-sm mb-0">
+                <thead>
+                    <tr>
+                        <th>Command</th>
+                        <th>Description</th>
+                        <th style="width:160px">Access</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% plugin.commands.forEach(cmd => { %>
+                    <tr>
+                        <td><code>/<%= cmd.name %></code> <span class="text-muted">!</span><code><%= cmd.name %></code></td>
+                        <td class="small" style="color:var(--subtext)"><%= cmd.description %></td>
+                        <td>
+                            <select name="c_<%= cmd.name %>" class="form-select form-select-sm">
+                                <option value="everyone" <%= cmd.level === 'everyone' ? 'selected' : '' %>>Everyone</option>
+                                <option value="member" <%= cmd.level === 'member' ? 'selected' : '' %>>Member only</option>
+                                <option value="admin" <%= cmd.level === 'admin' ? 'selected' : '' %>>Admin only</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+        <% } else { %>
+        <p class="small mb-0" style="color:var(--subtext)">No slash commands (dashboard / web only).</p>
+        <% } %>
+    </div>
+    <% }) %>
+
+    <button type="submit" class="btn btn-accent btn-lg w-100">
+        <i class="fa-solid fa-floppy-disk me-1"></i> Save permissions for this server
+    </button>
+</form>
+<% } %>

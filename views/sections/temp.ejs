@@ -1,0 +1,23 @@
+<div class="glass-card">
+    <h6 class="section-title"><i class="fa-solid fa-microphone"></i> Join-to-create</h6>
+    <form action="/add-temp-channel" method="POST" class="row g-3">
+        <div class="col-md-4"><select name="guild_id" class="form-select guild-select" data-target-cat="tc_cat"><% clientGuilds.forEach(g => { %><option value="<%= g.id %>"><%= g.name %></option><% }) %></select></div>
+        <div class="col-md-4"><select name="category_id" id="tc_cat" class="form-select" required></select></div>
+        <div class="col-md-4"><input name="default_name" class="form-control" value="{username}s Channel" required></div>
+        <div class="col-md-4"><input type="number" name="default_limit" class="form-control" value="0" min="0" max="99"></div>
+        <div class="col-md-4"><button class="btn btn-accent">Create trigger VC</button></div>
+    </form>
+</div>
+<div class="glass-card p-0">
+    <table class="table mb-0"><thead><tr><th>Server</th><th>Trigger</th><th>Category</th><th></th></tr></thead>
+    <tbody>
+        <% tempSettings.forEach(s => { %>
+        <tr>
+            <td><%= s.guildName %></td>
+            <td>➕ <%= s.channelName %></td>
+            <td><%= s.categoryName %></td>
+            <td><a href="/delete-temp-setting/<%= s.guildId %>/<%= s.channelId %>" class="btn-danger-sm"><i class="fa-solid fa-trash"></i></a></td>
+        </tr>
+        <% }) %>
+    </tbody></table>
+</div>

@@ -1,0 +1,7 @@
+<div class="glass-card text-center py-5" style="max-width:400px;margin:0 auto">
+    <h5 class="mb-4"><i class="fa-solid fa-palette me-2" style="color:var(--accent)"></i>Theme</h5>
+    <form action="/update-theme" method="POST">
+        <input type="color" name="accent_color" value="<%= accentColor %>" class="form-control form-control-color mx-auto mb-4" style="width:80px;height:50px;border:none;">
+        <button class="btn btn-accent px-5">Apply accent color</button>
+    </form>
+</div>

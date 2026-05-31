@@ -1,0 +1,87 @@
+<script>
+    const guildsData = <%- JSON.stringify(clientGuilds) %>;
+    const accentHex = '<%= accentColor %>';
+
+    function hexToRgb(hex) {
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? { r: parseInt(result[1], 16), g: parseInt(result[2], 16), b: parseInt(result[3], 16) } : null;
+    }
+    const rgb = hexToRgb(accentHex);
+    if (rgb) document.documentElement.style.setProperty('--accent-rgb', `${rgb.r}, ${rgb.g}, ${rgb.b}`);
+
+    function populateGuildSelect(select) {
+        const guildId = select.value;
+        const guild = guildsData.find(g => g.id === guildId);
+        const roleTarget = select.dataset.targetRole && document.getElementById(select.dataset.targetRole);
+        const chanTarget = select.dataset.targetChan && document.getElementById(select.dataset.targetChan);
+        const voiceTarget = select.dataset.targetVoice && document.getElementById(select.dataset.targetVoice);
+        const catTarget = select.dataset.targetCat && document.getElementById(select.dataset.targetCat);
+        if (!guild) {
+            [roleTarget, chanTarget, voiceTarget, catTarget].forEach(el => { if (el) el.innerHTML = '<option value="">Bot offline</option>'; });
+            const scope = select.closest('form') || select.closest('.glass-card') || document.getElementById('panel-roles');
+            refreshDiscordRolePickers(scope, null);
+            return;
+        }
+        if (roleTarget && !roleTarget.classList?.contains?.('discord-role-picker')) {
+            roleTarget.innerHTML = guild.roles.map(r =>
+                `<option value="${r.id}">@${r.name}</option>`).join('') || '<option value="">No roles</option>';
+        }
+        if (chanTarget) {
+            chanTarget.innerHTML = guild.channels.map(c =>
+                `<option value="${c.id}">#${c.name}</option>`).join('') || '<option value="">No channels</option>';
+        }
+        if (voiceTarget) {
+            voiceTarget.innerHTML = (guild.voiceChannels || []).map(c =>
+                `<option value="${c.id}">🔊 ${c.name}</option>`).join('') || '<option value="">No voice channels</option>';
+        }
+        if (catTarget) {
+            catTarget.innerHTML = guild.categories.map(c =>
+                `<option value="${c.id}">📁 ${c.name}</option>`).join('') || '<option value="">No categories</option>';
+        }
+        const scope = select.closest('form') || select.closest('.glass-card') || document;
+        refreshDiscordRolePickers(scope, guild);
+    }
+
+    document.querySelectorAll('.guild-select').forEach(sel => {
+        sel.addEventListener('change', () => populateGuildSelect(sel));
+        populateGuildSelect(sel);
+    });
+
+    if (location.hash.includes('roles') || document.getElementById('panel-roles')?.classList.contains('active')) {
+        const first = document.querySelector('#panel-roles .guild-select');
+        if (first) populateGuildSelect(first);
+    }
+
+    document.querySelectorAll('.nav-item-btn[data-panel]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.nav-item-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            btn.classList.add('active');
+            const panel = document.getElementById('panel-' + btn.dataset.panel);
+            if (panel) panel.classList.add('active');
+            const title = document.getElementById('page-title');
+            if (title) title.textContent = btn.dataset.title || 'Dashboard';
+            if (btn.dataset.panel === 'roles' || btn.dataset.panel === 'announcements') {
+                const sel = panel?.querySelector('.guild-select');
+                if (sel) populateGuildSelect(sel);
+            }
+        });
+    });
+
+    const hash = location.hash.replace('#panel-', '');
+    if (hash) {
+        const btn = document.querySelector(`.nav-item-btn[data-panel="${hash}"]`);
+        if (btn) btn.click();
+    }
+    if (location.search.includes('guild=') && (hash === 'permissions' || !hash)) {
+        document.querySelector('.nav-item-btn[data-panel="permissions"]')?.click();
+    }
+
+    const announceType = document.getElementById('announce_type_select');
+    const announceWrap = document.getElementById('announce_channel_wrapper');
+    if (announceType && announceWrap) {
+        const toggle = () => { announceWrap.style.display = announceType.value === 'channel' ? 'block' : 'none'; };
+        announceType.addEventListener('change', toggle);
+        toggle();
+    }
+</script>

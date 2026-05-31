@@ -1,0 +1,164 @@
+<p class="small mb-3" style="color:var(--subtext)">
+    Like Dyno / Sapphire: <strong>stream</strong> and <strong>upload</strong> alerts use separate channels.
+    Placeholders: <code>{streamer}</code> <code>{platform}</code> <code>{title}</code> <code>{url}</code> <code>{game}</code>.
+    Twitch needs API keys in <code>.env</code>.
+</p>
+
+<div class="row g-3">
+    <div class="col-lg-6">
+        <div class="glass-card h-100">
+            <h6 class="section-title"><i class="fa-solid fa-circle text-danger"></i> Stream announcement</h6>
+            <p class="small" style="color:var(--subtext)">Twitch, Kick, and YouTube <strong>live</strong> posts here.</p>
+            <form action="/announce-stream-setup" method="POST">
+                <div class="mb-2">
+                    <label class="small fw-bold">Server</label>
+                    <select name="guild_id" class="form-select guild-select" data-target-chan="stream_chan">
+                        <% clientGuilds.forEach(g => { %><option value="<%= g.id %>"><%= g.name %></option><% }) %>
+                    </select>
+                </div>
+                <div class="mb-2">
+                    <label class="small fw-bold">Stream channel</label>
+                    <select name="channel_id" id="stream_chan" class="form-select" required></select>
+                </div>
+                <div class="mb-2">
+                    <label class="small fw-bold">Ping role (optional)</label>
+                    <div class="discord-role-picker" data-mode="single" data-field="ping_role_id"></div>
+                </div>
+                <div class="mb-2">
+                    <label class="small fw-bold">Message</label>
+                    <input type="text" name="message" class="form-control" placeholder="{streamer} is now live on {platform}!">
+                </div>
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" name="enabled" value="1" id="stream_on" checked>
+                    <label class="form-check-label small" for="stream_on">Enabled</label>
+                </div>
+                <button type="submit" class="btn btn-accent btn-sm">Save stream channel</button>
+            </form>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="glass-card h-100">
+            <h6 class="section-title"><i class="fa-solid fa-video"></i> Upload announcement</h6>
+            <p class="small" style="color:var(--subtext)">YouTube <strong>new videos</strong> post here (separate from live).</p>
+            <form action="/announce-upload-setup" method="POST">
+                <div class="mb-2">
+                    <label class="small fw-bold">Server</label>
+                    <select name="guild_id" class="form-select guild-select" data-target-chan="upload_chan">
+                        <% clientGuilds.forEach(g => { %><option value="<%= g.id %>"><%= g.name %></option><% }) %>
+                    </select>
+                </div>
+                <div class="mb-2">
+                    <label class="small fw-bold">Upload channel</label>
+                    <select name="channel_id" id="upload_chan" class="form-select" required></select>
+                </div>
+                <div class="mb-2">
+                    <label class="small fw-bold">Ping role (optional)</label>
+                    <div class="discord-role-picker" data-mode="single" data-field="ping_role_id"></div>
+                </div>
+                <div class="mb-2">
+                    <label class="small fw-bold">Message</label>
+                    <input type="text" name="message" class="form-control" placeholder="{streamer} uploaded: {title}">
+                </div>
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" name="enabled" value="1" id="upload_on" checked>
+                    <label class="form-check-label small" for="upload_on">Enabled</label>
+                </div>
+                <button type="submit" class="btn btn-accent btn-sm">Save upload channel</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="glass-card">
+    <h6 class="section-title"><i class="fa-solid fa-user-plus"></i> Follow creator</h6>
+    <form action="/announce-add" method="POST" class="row g-3">
+        <div class="col-md-3">
+            <label class="small fw-bold">Server</label>
+            <select name="guild_id" class="form-select guild-select">
+                <% clientGuilds.forEach(g => { %><option value="<%= g.id %>"><%= g.name %></option><% }) %>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label class="small fw-bold">Platform</label>
+            <select name="platform" class="form-select" required>
+                <option value="youtube">YouTube</option>
+                <option value="twitch">Twitch</option>
+                <option value="kick">Kick</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label class="small fw-bold">Channel ID / @handle / login</label>
+            <input type="text" name="creator" class="form-control" placeholder="UC… or @name" required>
+        </div>
+        <div class="col-md-3">
+            <label class="small fw-bold">Display name</label>
+            <input type="text" name="label" class="form-control" placeholder="Optional">
+        </div>
+        <div class="col-md-2">
+            <div class="form-check mt-4">
+                <input class="form-check-input" type="checkbox" name="notify_live" value="1" checked>
+                <label class="form-check-label small">Stream alerts</label>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="form-check mt-4">
+                <input class="form-check-input" type="checkbox" name="notify_upload" value="1" checked>
+                <label class="form-check-label small">Upload alerts</label>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-accent w-100 mt-3">Add</button>
+        </div>
+    </form>
+</div>
+
+<div class="glass-card p-0">
+    <table class="table table-sm mb-0">
+        <thead>
+            <tr>
+                <th>Server</th>
+                <th>Stream channel</th>
+                <th>Upload channel</th>
+                <th>Status</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <% announceSettings.forEach(a => { %>
+            <tr>
+                <td><%= a.guildName %></td>
+                <td><%= a.streamChannel %></td>
+                <td><%= a.uploadChannel %></td>
+                <td><%= a.enabled ? '<span class="badge bg-success">On</span>' : '<span class="badge bg-secondary">Off</span>' %></td>
+                <td><a href="/announce-disable/<%= a.guildId %>" class="btn-danger-sm">Disable all</a></td>
+            </tr>
+            <% }) %>
+            <% if (!announceSettings.length) { %>
+            <tr><td colspan="5" class="text-center py-3" style="color:var(--subtext)">No channels configured yet.</td></tr>
+            <% } %>
+        </tbody>
+    </table>
+</div>
+
+<div class="glass-card p-0">
+    <table class="table table-sm mb-0">
+        <thead>
+            <tr><th>#</th><th>Server</th><th>Platform</th><th>Creator</th><th>Alerts</th><th></th></tr>
+        </thead>
+        <tbody>
+            <% announceSubs.forEach(s => { %>
+            <tr>
+                <td><code><%= s.id %></code></td>
+                <td><%= s.guildName %></td>
+                <td><%= s.platformLabel %></td>
+                <td><%= s.creatorLabel %><br><span class="small" style="color:var(--subtext)"><%= s.creatorId %></span></td>
+                <td><%= s.types %></td>
+                <td><a href="/announce-remove/<%= s.id %>" class="btn-danger-sm">Remove</a></td>
+            </tr>
+            <% }) %>
+            <% if (!announceSubs.length) { %>
+            <tr><td colspan="6" class="text-center py-3" style="color:var(--subtext)">No creators followed.</td></tr>
+            <% } %>
+        </tbody>
+    </table>
+</div>

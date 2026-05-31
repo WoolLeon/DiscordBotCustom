@@ -1,0 +1,20 @@
+<div class="glass-card">
+    <p class="small mb-0" style="color:var(--subtext)">
+        Ticket panels are created in Discord with <code>!ticket_setup</code>. This panel shows saved settings and open ticket counts.
+    </p>
+</div>
+<div class="glass-card p-0">
+    <table class="table mb-0"><thead><tr><th>Server</th><th>Panel</th><th>Category</th><th>Staff role</th><th>Open</th></tr></thead>
+    <tbody>
+        <% ticketRows.forEach(t => { %>
+        <tr>
+            <td><%= t.guildName %></td>
+            <td><%= t.panelCh %></td>
+            <td><%= t.category %></td>
+            <td><%= t.staffRole %></td>
+            <td><span class="badge bg-warning text-dark"><%= t.openCount %></span></td>
+        </tr>
+        <% }) %>
+        <% if (!ticketRows.length) { %><tr><td colspan="5" class="text-center py-3" style="color:var(--subtext)">No ticket systems configured.</td></tr><% } %>
+    </tbody></table>
+</div>
